@@ -75,30 +75,31 @@ Run the cloud API and portal as above. Start a bus hub on port `9000`, then
 start DimOS on the Go2 computer:
 
 ```bash
-cd /Users/laminegueye/Desktop/repos/HackMITdog
-source cloud/.venv/bin/activate
+# Repository root. Use whichever virtualenv has the app dependencies.
+source .venv/bin/activate
 python bus/run_hub.py --port 9000
 ```
 
 Leave that bus-hub terminal running. In a separate terminal, start DimOS:
 
 ```bash
-source /Users/laminegueye/dimensional-applications/.venv/bin/activate
-cd /Users/laminegueye/Desktop/repos/HackMITdog
-VIRTUAL_ENV=/Users/laminegueye/dimensional-applications/.venv uv pip install -e .
+source /path/to/dimos-venv/bin/activate
+# Repository root, installed into that DimOS environment.
+VIRTUAL_ENV=/path/to/dimos-venv uv pip install -e .
 dimos run hackmitdog.aegis-breadcrumb-agentic \
-  --robot-ip 192.168.12.1 \
+  --robot-ip "$ROBOT_IP" \
   --unitree-aes-128-key "$UNITREE_AES_128_KEY" \
-  --model openai:muse-spark-1.3
+  --model "$DIMOS_MODEL"
 ```
+
+`--model` is the agentic blueprint’s provider string. Omit it when you run `hackmitdog.breadcrumb`, which does not start an LLM client.
 
 In another terminal, start the real-robot orchestrator. This runs the intent
 and safety state machine only; it does **not** start `MockPatient` or
 `MockRobot`:
 
 ```bash
-cd /Users/laminegueye/Desktop/repos/HackMITdog
-source cloud/.venv/bin/activate
+source .venv/bin/activate
 PYTHONPATH=bus:orchestrator python orchestrator/run_orchestrator.py \
   --bus-url ws://127.0.0.1:9000/ws \
   --cloud http://127.0.0.1:8000
@@ -114,8 +115,7 @@ dimos mcp list-tools
 Then, in another terminal on the same computer, start the bridge:
 
 ```bash
-cd /Users/laminegueye/Desktop/repos/HackMITdog
-source /Users/laminegueye/dimensional-applications/.venv/bin/activate
+source /path/to/dimos-venv/bin/activate
 python robot/dimos_command_bridge.py \
   --bus-url ws://127.0.0.1:9000/ws \
   --dimos-bin dimos

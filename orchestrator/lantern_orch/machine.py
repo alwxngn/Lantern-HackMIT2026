@@ -1,4 +1,4 @@
-"""Five-state night-watch machine + Tier-0 say/command/alert."""
+"""Night-watch states IDLE, ATTEND, LEAD, ESCALATE, and EMERGENCY, plus WALK, FOLLOW, CONFIRM_HOME, and GUIDE_HOME."""
 
 from __future__ import annotations
 

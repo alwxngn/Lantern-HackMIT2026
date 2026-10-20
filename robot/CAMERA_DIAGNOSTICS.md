@@ -81,8 +81,7 @@ DOG_CAMERA_URL=http://127.0.0.1:9877/
 Restart the API after changing `.env`:
 
 ```bash
-cd /Users/laminegueye/Desktop/repos/HackMITdog
-source cloud/.venv/bin/activate
+source .venv/bin/activate
 cd cloud/server
 python -m uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```

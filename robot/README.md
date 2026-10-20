@@ -1,110 +1,50 @@
-# /robot — E2 (perception + Unitree / DimOS)
+# Robot bridges
 
-Owner: **E2**. Portal stays in `/cloud` and must never import Unitree or DimOS SDKs.
+Perception and Unitree / DimOS stay in this folder and in `hackmitdog/`. The portal does not import those SDKs. Video is out of band: do not add camera frames to `/api/ingest`.
 
-## Dog camera → Night Watch (on-demand)
+## Dog camera
 
-Night Watch can show a **gated** live view when the caregiver taps **View dog camera**
-(or accepts the soft offer during an alert). Video is **out-of-band** — not on the frozen
-`04-interfaces` bus.
-
-### Contract with E3
+Night Watch shows a live view when a caregiver opens **View dog camera**.
 
 | | |
 |---|---|
-| Cloud env | `DOG_CAMERA_ENABLED=1` and `DOG_CAMERA_URL=<viewer>` |
-| Viewer | Any HTTPS/HTTP page E3 can iframe (DimOS cockpit / teleop / your MJPEG page) |
-| Privacy | Stream only while caregiver has the panel open — no 24/7 background feed |
-| Bus | Do **not** invent `camera_frame` messages; keep map/track on `/api/ingest` as today |
+| Cloud env | `DOG_CAMERA_ENABLED=1` and `DOG_CAMERA_URL` for an iframe page |
+| Alternate | `DOG_CAMERA_STREAM_URL` for `GET /api/camera/stream` |
+| Bus | Map and track events still use `/api/ingest` |
 
-### Fastest demo path (DimOS cockpit)
+A DimOS cockpit is one viewer that satisfies `DOG_CAMERA_URL`. Restart the API after changing `cloud/.env`. Diagnostics: [`CAMERA_DIAGNOSTICS.md`](CAMERA_DIAGNOSTICS.md).
 
-On the machine that talks to the Go2 (or sim):
+## Command bridge
 
-```bash
-# From your DimOS install (see DimOS docs/web)
-uv run dimos --simulation run --local-relay unitree-go2-agentic-cockpit
-# Cockpit (camera panel): http://127.0.0.1:7780/
-```
-
-Real robot: use DimOS Go2 WebRTC run + cockpit/teleop blueprints
-(`teleop-hosted-go2-transport` or local relay). Go2 already exposes `color_image` when
-`ConnectionConfig.camera=True`.
-
-Then in `cloud/.env`:
+Run one DimOS blueprint that exposes the Aegis and breadcrumb tools, then:
 
 ```bash
-DOG_CAMERA_ENABLED=1
-DOG_CAMERA_URL=http://127.0.0.1:7780/
-```
-
-Restart cloud API; open Night Watch → **View dog camera**.
-
-### Cleaner path (optional later)
-
-Subscribe to DimOS `color_image` and serve MJPEG/WebRTC on a dedicated port; set
-`DOG_CAMERA_URL` to that page, or `DOG_CAMERA_STREAM_URL` to a raw MJPEG URL for
-`GET /api/camera/stream` (same-origin proxy for phone tunnels).
-
-### Map / tracks (unchanged)
-
-Still `POST /api/ingest` with `map_ready` / `person_track` — see
-[`docs/16-e3-portal.md`](../docs/16-e3-portal.md) and
-[`cloud/fixtures/sample_map_ready.json`](../cloud/fixtures/sample_map_ready.json).
-
-### Phone voice commands → DimOS
-
-Start the combined DimOS blueprint, then run the bus adapter in a second terminal:
-
-```bash
-dimos run hackmitdog.aegis-breadcrumb-agentic \
-  --robot-ip 192.168.12.1 \
-  --unitree-aes-128-key "$UNITREE_AES_128_KEY" \
-  --model openai:muse-spark-1.3
-
 python robot/dimos_command_bridge.py --bus-url ws://127.0.0.1:9000/ws
 ```
 
-The adapter maps existing bus commands to `follow_person`,
-`stop_person_follow`, `start_breadcrumb_recording`, and `take_me_home`. It does
-not add a new bus message or import DimOS into the cloud/orchestrator process.
+Handled actions:
 
-## Room mapping skill
+| Bus action | MCP calls |
+|---|---|
+| `follow_person` | `start_breadcrumb_recording`, then `follow_person` |
+| `guide_home` | `stop_person_follow`, then `take_me_home` |
+| `stop` | `stop_person_follow` |
+| `posture` with `command_name` | `execute_sport_command` |
 
-The Aegis Go2 blueprint now exposes `map_room` through DimOS MCP. It uses the
-existing `WavefrontFrontierExplorer` and `world/global_map` voxel stream, then
-writes `<map_id>.ply` (browser-loadable 3-D point cloud) and `<map_id>.json`
-under `artifacts/maps` by default:
+Anything else is reported as an unsupported action, including Night Watch `lead_to`.
 
-```bash
-dimos mcp call map_room --json-args '{"room_id":"living_room","duration_s":180,"cloud_ingest_url":"http://127.0.0.1:8000/api/ingest","artifact_url":"https://maps.example/living_room.ply"}'
-```
+The phone walk path is [`VOICE_WALK_RUNBOOK.md`](VOICE_WALK_RUNBOOK.md).
 
-The result includes absolute artifact paths and the existing `map_ready`
-payload. Serve the PLY from the returned path and load it with a web viewer
-such as Three.js `PLYLoader`; the optional `artifact_url` is carried as
-additive metadata in that existing payload. Stop/cancel the skill through the
-normal DimOS `end_exploration` tool if needed.
+## Map bridge
 
-### Start mapping from the portal
-
-The onboarding **Start mapping** button sends a live `map_scan_request` when
-`MAP_SCAN_MODE=live`. Run this bridge beside DimOS so it converts that request
-into the `map_room` MCP call:
+`map_room` runs bounded frontier exploration and writes `<map_id>.ply` plus `<map_id>.json`. Onboarding **Start mapping** publishes `map_scan_request` with a live mode. This process turns that into the MCP call and posts `map_ready`:
 
 ```bash
 python robot/dimos_map_bridge.py \
   --bus-url ws://127.0.0.1:9000/ws \
   --cloud-base http://127.0.0.1:8000 \
   --artifact-dir artifacts/maps \
-  --artifact-base http://127.0.0.1:8000/api/maps
+  --artifact-base /api/maps
 ```
 
-The bridge writes the PLY into the cloud server's `artifacts/maps` directory
-when both processes run on the same machine, then posts `map_ready` to the
-cloud API. The portal stays on the mapping screen until that event arrives and
-shows estimated progress while the robot explores. **Stop & use current map**
-publishes the frozen robot `command` action `stop`; the bridge calls DimOS
-`end_exploration`, after which `map_room` exports the freshest partial map and
-posts its normal `map_ready`. Pause/resume is intentionally not shown because
-the current explorer does not support resuming the same scan session.
+The PLY has to land in the cloud process’s artifact directory (default `artifacts/maps`, or `LANTERN_MAP_ARTIFACT_DIR`). **Stop & use current map** sends command action `stop`; the bridge calls `end_exploration` and the skill exports the partial cloud. The explorer has no resume of the same scan session.

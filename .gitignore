@@ -20,6 +20,10 @@ __pycache__/
 test-results/
 MUJOCO_LOG.TXT
 .idea/
+.vscode/
+
+# Runtime orchestrator log (default --log path). Fixtures under cloud/fixtures stay tracked.
+orchestrator_events.jsonl
 
 # Aegis danger-zone persistence -- runtime state, not source
 hackmitdog/aegis/danger_zones.json
