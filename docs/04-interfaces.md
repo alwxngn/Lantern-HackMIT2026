@@ -47,7 +47,7 @@ Every message:
 ArUco marker at the front door in frame, else `null`. This is odometry — `x`/`y`/`theta` are
 dead-reckoned, not GPS — and it's the entire signal `GUIDE_HOME` needs: the orchestrator buffers
 this stream into a breadcrumb trail while walking, and `landmark_visible` is the cue to switch
-from retracing the trail to marker-relative final approach. See `14-companion-and-caretaker.md`'s
+from retracing the trail to marker-relative final approach. See `archive/14-companion-and-caretaker.md`'s
 breadcrumb-retrace section.
 
 ### `person_track` (10 Hz, when a person is detected)
@@ -73,14 +73,14 @@ signal.
 **The orchestrator triggers on these two fields**, so they matter more than they look.
 
 `tracker`: `overhead_cam` | `lidar_cluster` | `onboard_fusion` | `mock` — which sensor produced
-this track. **How this message is produced at all is specified in `11-perception.md`**, which
+this track. **How this message is produced at all is specified in `archive/11-perception.md`**, which
 exists because the first draft of this document defined the schema and never said where the data
 came from. Render `tracker` in the dashboard: when a judge asks how you track the person, a live
 field naming the sensor is a better answer than a description, and it keeps you honest about
 which tracker you are actually demoing.
 
 **Outdoor `FOLLOW` uses `onboard_fusion`, same as indoors** (Tier 2, see
-`14-companion-and-caretaker.md` §6–9): the radius check only needs the person's position
+`archive/14-companion-and-caretaker.md` §6–9): the radius check only needs the person's position
 *relative to the robot*, which the robot's own onboard camera/LiDAR already produces regardless
 of location — there was never a need for an absolute (GPS) fix just to check separation
 distance. There is no `gps` tracker and no `lat`/`lon` field; the whole outdoor-navigation
@@ -99,12 +99,12 @@ problem is handled separately by `GUIDE_HOME`'s breadcrumb retrace against `pose
 `zone_class`: `safe` | `watch` | `exit` — caregiver-facing label for `exit` is **"Don't go"**
 (matches how a non-technical caregiver thinks about it; not always literally an exit — a
 stairway or an outdoor street edge counts too). The wire value stays `exit`; see
-`14-companion-and-caretaker.md` §5. Zone definitions in `config_update` gain a `label` and a
+`archive/14-companion-and-caretaker.md` §5. Zone definitions in `config_update` gain a `label` and a
 `kind` (`door` | `stairs` | `outdoor_boundary`) for this reason.
 `event`: `entered` | `exited` | `approaching`
 
 `exited` on a zone with `zone_class: "exit"` is the trigger for escalation ladder step 5
-(`02-blueprint.md` §5) — immediate, not the usual 20 s grace, and it's the trigger that opens
+(`archive/02-blueprint.md` §5) — immediate, not the usual 20 s grace, and it's the trigger that opens
 the `FOLLOW` state (Tier 2).
 
 ### `robot_status`
@@ -190,8 +190,8 @@ nearly free: normalized string similarity over the last N finals.
 ```
 
 `state`: `IDLE` | `ATTEND` | `LEAD` | `ESCALATE` | `EMERGENCY` | `WALK` | `FOLLOW` |
-`CONFIRM_HOME` | `GUIDE_HOME` — the last four are Tier 2 (`02-blueprint.md` §4,
-`14-companion-and-caretaker.md` §6–7). `WALK` and `FOLLOW` share the exact same downstream
+`CONFIRM_HOME` | `GUIDE_HOME` — the last four are Tier 2 (`archive/02-blueprint.md` §4,
+`archive/14-companion-and-caretaker.md` §6–7). `WALK` and `FOLLOW` share the exact same downstream
 handling as `LEAD`/`ESCALATE` for the safety envelope (yield rule, distress override); they're
 new *entry points and severities*, not a new safety model.
 `agitation`: `calm` | `unsettled` | `agitated`
@@ -223,7 +223,7 @@ carries no destination, only a person to track. `guide_home` (Tier 2) — retrac
 trail recorded from `pose` since the walk started (or replay a stored `route_id` trail forward,
 if a preferred route was set), ending with marker-relative homing once `pose.landmark_visible`
 fires. No GPS, no `config_update.patient.home` coordinate — see
-`14-companion-and-caretaker.md`'s breadcrumb-retrace section. E2 enforces the same envelope as
+`archive/14-companion-and-caretaker.md`'s breadcrumb-retrace section. E2 enforces the same envelope as
 `approach_person` on the way — announce, standoff, speed cap — because guiding someone home is
 still moving alongside a person, not autonomous point-to-point robotics.
 
@@ -277,7 +277,7 @@ entirely — not queued, dropped — outside `IDLE`.
 }}
 ```
 
-`level` maps to the ladder in `02-blueprint.md` §5. `channels` gains `voice_call` at level 3.
+`level` maps to the ladder in `archive/02-blueprint.md` §5. `channels` gains `voice_call` at level 3.
 
 Write `headline` the way you'd want to read it at 2 AM: the person's name, in plain words, no
 jargon. "Susan is heading for the front door" — not "ZONE_BREACH_IMMINENT: front_door."
@@ -288,7 +288,7 @@ jargon. "Susan is heading for the front door" — not "ZONE_BREACH_IMMINENT: fro
 `day_walk_separation` alert is a low-severity push, `requires_ack: false` — it's a location
 ping, not a page. `live_tracking: true` tells the dashboard to switch the map into continuous
 streaming mode for the duration of the episode instead of rendering a single pin
-(`02-blueprint.md` §3, Pillar 3).
+(`archive/02-blueprint.md` §3, Pillar 3).
 
 ## Cloud → bus
 
@@ -336,17 +336,17 @@ in policy — again, a much better answer to the ethics question.
 
 **`patient.schedule`** (Tier 1, additive) drives the reminder engine in `04-interfaces.md`'s
 `say.origin: "reminder"` — one onboarding field turning proactive nudges from hard-coded timers
-into something driven by the actual person (`14-companion-and-caretaker.md` §3–4).
+into something driven by the actual person (`archive/14-companion-and-caretaker.md` §3–4).
 
 There is no `patient.home` field — home is whichever breadcrumb the current walk started from,
-recorded automatically from `pose`, not a configured coordinate (`14-companion-and-caretaker.md`
+recorded automatically from `pose`, not a configured coordinate (`archive/14-companion-and-caretaker.md`
 §8). **`patient.route_id`** (Tier 2, optional) points at a *saved* breadcrumb trail from a past
 walk, replayed forward instead of the live trail replayed backward — the same retrace mechanism,
 run the other direction. Point-to-point `guide_home` works with this left `null`; a route is an
 enhancement on top of a working "go home," not a prerequisite for it.
 
 **Escalation ladder level 5** fires immediately (`after_s: 0`) on `trigger: "dont_go_breach"`
-rather than waiting on a timer like levels 2–4 — see `02-blueprint.md` §5.
+rather than waiting on a timer like levels 2–4 — see `archive/02-blueprint.md` §5.
 
 ## Mocks (E4, by 2:30 PM Saturday)
 

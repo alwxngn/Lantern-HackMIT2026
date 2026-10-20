@@ -8,7 +8,7 @@ A caregiver portal and paired-phone voice check-in for a Unitree Go2 companion, 
 
 Lantern is a 24-hour hackathon prototype (HackMIT 2026, September 19–20) for families supporting someone with dementia. A caregiver sets up the household in a web app, sends a spoken check-in to a paired phone, and watches Night Watch alerts, maps, and activity from the same event stream. Spoken robot requests can walk, follow, return home, or play a fixed set of Go2 actions when DimOS and the robot bridges are running. The phone is the microphone and speaker. It does not talk to the Go2 directly.
 
-This repository is the finished hackathon build. The planning notes in [`docs/`](docs/) describe a wider product than the code implements. The robot skill package still uses the earlier name **Aegis**.
+This repository is the finished hackathon build. Planning notes are in [`docs/archive/`](docs/archive/). They describe design targets, not this build. The robot skill package still uses the earlier name **Aegis**.
 
 ## Features
 
@@ -33,7 +33,7 @@ This repository is the finished hackathon build. The planning notes in [`docs/`]
 | Robot | Separate processes call `dimos mcp`. Skills are DimOS blueprints in `pyproject.toml` |
 | Notifications | Twilio Python helper. Missing credentials log a dry run |
 
-Python **3.12+** (`pyproject.toml`). The portal build was run here on Node **22.23.3** with Vite 8. DimOS and a Go2 are required only for live robot and live mapping.
+Python **3.12+** (`pyproject.toml`). Node **20.19+** or **22.12+** for Vite 8. DimOS and a Go2 are required only for live robot and live mapping.
 
 ## Architecture
 
@@ -67,7 +67,8 @@ orchestrator/          State machine, intents, mocks, spine runner
 robot/                 DimOS command and map bridges
 hackmitdog/aegis/      Companion skills and blueprint entry points
 artifacts/maps/        Captured PLY maps and JSON sidecars
-docs/                  Original product, safety, and interface notes
+docs/                  Interface contract (`04`) and portal notes (`16`)
+docs/archive/          Hackathon planning, pitch, and judge-prep notes
 ```
 
 ## Setup
@@ -209,7 +210,7 @@ python robot/dimos_map_bridge.py --bus-url ws://127.0.0.1:9000/ws --cloud-base h
 
 `take_me_home` publishes the first recorded pose to the DimOS planner. It uses the current costmap. The skill does not replay the trail in reverse. The command bridge handles follow, home, stop-follow, and named sport commands. Other Night Watch commands, including `lead_to`, are outside that bridge.
 
-More detail: [`robot/README.md`](robot/README.md), [`robot/VOICE_WALK_RUNBOOK.md`](robot/VOICE_WALK_RUNBOOK.md), [`AEGIS_SKILL_TESTING.md`](AEGIS_SKILL_TESTING.md).
+More detail: [`robot/README.md`](robot/README.md), [`robot/VOICE_WALK_RUNBOOK.md`](robot/VOICE_WALK_RUNBOOK.md), [`docs/archive/AEGIS_SKILL_TESTING.md`](docs/archive/AEGIS_SKILL_TESTING.md).
 
 ### Camera
 
@@ -226,27 +227,16 @@ npm --prefix cloud/web run lint
 npm --prefix cloud/web run build
 ```
 
-Checked on Python 3.12 with the four requirements files above, and Node 22:
-
-| Command | Result |
-|---|---|
-| `voice/tests` | 25 passed, 1 failed, 2 errors. `test_walk_home_confirmation_and_stop_with_mock_robot` expects one forwarded transcript and sees 64. `test_playback_handoff` and `test_robot_phone_ui` import Playwright, which is only in `voice/requirements-dev.txt` |
-| `orchestrator/tests` | 4 passed, 2 errors. Both call `RemoteBus._dispatch_if_new`, which the class does not define |
-| `cloud.scripts.test_voice_clone` | 3 passed |
-| `robot/tests` | 5 passed |
-| `npm run lint` | exits 0, with oxlint warnings in `Map3D.tsx` and `MorningReport.tsx` |
-| `npm run build` | passes (`tsc -b` and Vite) |
-
 `python -m voice.check_providers` and the Playwright scripts under `voice/tests/` call live speech APIs or a browser. They are optional.
 
 `hackmitdog/aegis/test_danger_zone_geometry.py` is a geometry script next to the skill, not part of the unittest discovery paths above.
 
 ## Team
 
-- Ally 
+- Ally Chen
 - Javi
-- Lamine 
-- Alex 
+- Lamine
+- Alex
 
 ## Known limitations
 
@@ -261,7 +251,7 @@ Checked on Python 3.12 with the four requirements files above, and Node 22:
 - Routine completion ticks live in the browser. Saving a routine writes config. It does not schedule speech on its own.
 - Live map files have to be in the API’s artifact directory. An `artifact_url` string does not copy the file.
 - Physical yielding, collision avoidance, and emergency stop are the robot runtime’s job. Mock scenarios do not establish that behavior.
-- The voice pipeline test and the two remote-bus tests in the table above fail on the current program. The pipeline forwards the same transcript many times. The bus tests call a method the refactor removed.
+- As of 20 October 2026, on Python 3.12 and Node 22.23.3: voice discovery had 25 passed, 1 failed (`test_walk_home_confirmation_and_stop_with_mock_robot` saw 64 transcript forwards), and 2 errors because Playwright is only in `voice/requirements-dev.txt`. Orchestrator discovery had 4 passed and 2 errors (`RemoteBus._dispatch_if_new` is not defined). Robot tests (5), voice-clone tests (3), lint (existing oxlint warnings in `Map3D.tsx` and `MorningReport.tsx`), and the production build passed.
 
 ## License and citations
 

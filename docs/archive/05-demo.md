@@ -30,8 +30,8 @@ in that order.
 Someone plays Susan. Someone narrates. The laptop shows the dashboard. A phone sits face-up on
 the table where the judge can see it.
 
-**0:00–0:10 — The hook.** *"It's 2 AM. Susan has dementia. He's about to try to leave the house
-— and the way his daughter finds out today is a door alarm, after he's already outside."*
+**0:00–0:10 — The hook.** *"It's 2 AM. Susan has dementia. She's about to try to leave the house
+— and the way her daughter finds out today is a door alarm, after she's already outside."*
 
 Set the scene before anything moves. Judges who don't have the frame don't understand what
 they're watching.
@@ -47,7 +47,7 @@ the front-sector standoff. Susan mumbles *"where am I supposed to be"*. Transcri
 The robot answers in the familiar voice: *"It's night time, Susan. You're home. Sarah recorded
 this for you."*
 
-*"It never corrects him, never tests his memory, never claims to be his daughter."*
+*"It never corrects her, never tests her memory, never claims to be her daughter."*
 
 **0:45–1:05 — Lead away.** Susan turns toward the taped exit zone. Agitation goes `agitated`,
 state goes `LEAD`. The robot moves to a point ahead and to the side — **never into the
@@ -55,9 +55,9 @@ doorway** — and walks slowly toward the safe zone while talking.
 
 This is the line to say slowly, because it's the one that separates you:
 
-*"Watch what it doesn't do. It doesn't block him. A robot blocking a person with dementia at
+*"Watch what it doesn't do. It doesn't block her. A robot blocking a person with dementia at
 2 AM is a fall risk and it's a restraint. It leads instead — 1.5 m standoff, 0.3 m/s, always in
-his field of view, and if he walks at it, it gets out of the way."*
+her field of view, and if she walks at it, it gets out of the way."*
 
 **Invite the judge to test it.** "Walk at it." They do. It yields. `robot_status: yielded`
 appears in the log. That ten seconds does more for you than any slide.
@@ -69,7 +69,7 @@ can pick up the phone.
 *"SMS first, then an actual phone call after sixty seconds — texts don't wake people at 2 AM."*
 
 **1:20–1:30 — Morning report.** Click to the report. *"Two events overnight, both resolved by
-redirection, he was up eleven minutes at 2:14."*
+redirection, she was up eleven minutes at 2:14."*
 
 *"This is the part that makes a family keep the device. It's the first time they wake up
 knowing what happened instead of guessing."*
@@ -84,9 +84,9 @@ attention, and the 2 AM story wins that fight every time. Use it only when a jud
 the report, or explicitly asks "what does it do the rest of the time?"
 
 *"It's not only a night-watch device."* Susan asks it something ordinary — "what did I used to
-do for work" — and it answers from his own profile, same voice, same policy rules, no agitation
-involved. Then, if `FOLLOW`/`GUIDE_HOME` are wired: *"And during the day, he can just go for a
-walk — no fixed route."* Walk him away from the taped "home" corner, narrate the radius
+do for work" — and it answers from her own profile, same voice, same policy rules, no agitation
+involved. Then, if `FOLLOW`/`GUIDE_HOME` are wired: *"And during the day, she can just go for a
+walk — no fixed route."* Walk her away from the taped "home" corner, narrate the radius
 breaking, `FOLLOW` engaging, and say "take me home" — the robot asks *"Would you still like to
 go home?"* once, then retraces its own path back. **Say the line here, and say it with some
 pride:** *"This is running for real — the robot is replaying its own recorded path, the same

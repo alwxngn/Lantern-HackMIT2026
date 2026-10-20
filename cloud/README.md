@@ -6,27 +6,27 @@ The API mounts phone audio at `/voice`. Run that one process on port 8000. A sec
 
 ## Install
 
-Python 3.12+ and Node 20.19+ (or 22.12+).
+Python 3.12+ and Node 20.19+ or 22.12+ (Vite 8).
+
+The API imports the mounted voice package, so use one environment at the repository root. Full environment variables are in the [root README](../README.md).
 
 ```bash
-cd cloud
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env
-cd web && npm install
+python -m pip install -r cloud/requirements.txt -r voice/requirements.txt -r orchestrator/requirements.txt -r bus/requirements.txt
+npm --prefix cloud/web ci
+cp cloud/.env.example cloud/.env
 ```
-
-Voice, bus, and orchestrator requirements are separate files. The root README installs all of them into one environment, which is the setup the combined app expects.
 
 ## Run
 
 ```bash
-# Terminal 1, from cloud/ with the venv active
-cd server && uvicorn main:app --host 127.0.0.1 --port 8000
+# Terminal 1, repository root, with the venv active
+source .venv/bin/activate
+python -m uvicorn main:app --app-dir cloud/server --host 127.0.0.1 --port 8000
 
 # Terminal 2
-cd cloud/web && npm run dev
+npm --prefix cloud/web run dev
 ```
 
 | URL | Screen |
