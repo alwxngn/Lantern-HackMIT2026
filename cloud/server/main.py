@@ -287,7 +287,7 @@ async def api_checkin(body: dict[str, Any]):
 
 @app.post("/api/map-scan")
 async def api_map_scan(body: dict[str, Any] | None = None):
-    """Caregiver 'Scan home' — live mode asks E2; demo mode synthesizes map_ready."""
+    """Start mapping. Live mode waits for map_ready; any other mode returns the schematic floor plan."""
     import os
 
     body = body or {}

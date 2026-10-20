@@ -1,7 +1,8 @@
-# /orchestrator — state machine, mocks, spine runner (E4)
+# Orchestrator
 
-Owns the product spine: `IDLE → ATTEND → LEAD → ESCALATE → EMERGENCY`, mocks, and the
-bridge into `/cloud`. Schemas: [`docs/04-interfaces.md`](../docs/04-interfaces.md).
+Night Watch state machine, walk intents, mocks, and the cloud bridge. Schemas: [`docs/04-interfaces.md`](../docs/04-interfaces.md). Robot install is in the [root README](../README.md).
+
+States: `IDLE`, `ATTEND`, `LEAD`, `ESCALATE`, `EMERGENCY`, plus `WALK`, `FOLLOW`, `CONFIRM_HOME`, and `GUIDE_HOME`.
 
 ## Install
 
@@ -9,82 +10,42 @@ bridge into `/cloud`. Schemas: [`docs/04-interfaces.md`](../docs/04-interfaces.m
 cd orchestrator
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-# bus package on PYTHONPATH via run_spine (adds ../bus)
 ```
 
-## Spine on mocks (6 PM prototype)
+`run_spine.py` puts `../bus` on `PYTHONPATH`.
 
-**Terminal 1 — cloud API**
+## Mock spine
 
-```bash
-cd cloud && source .venv/bin/activate
-cd server && uvicorn main:app --reload --host 0.0.0.0 --port 8000
-```
-
-**Terminal 2 — portal (optional)**
-
-```bash
-cd cloud/web && npm run dev
-# http://127.0.0.1:5173/watch
-```
-
-**Terminal 3 — spine**
+Terminal 1, cloud API on port 8000 (see [`cloud/README.md`](../cloud/README.md)). Terminal 2, optional portal at http://127.0.0.1:5173/watch. Terminal 3:
 
 ```bash
 cd orchestrator && source .venv/bin/activate
 python run_spine.py --scenario exit_seeking
 ```
 
-What you should see:
-
-1. `mock_patient` walks bedroom → hallway → Don't-go
-2. Orchestrator publishes `agent_state` ATTEND → LEAD → ESCALATE + `alert` + `say` + `command`
-3. `mock_robot` accepts `lead_to` and emits `pose` / `robot_status`
-4. Bridge POSTs every message to `cloud /api/ingest` → Night Watch updates
-5. Twilio SMS fires (or console dry-run); ack from the portal cancels the ladder and returns IDLE
-
-Bus hub also listens on **:9000** (`POST /publish`, `WS /ws`) for E1/E2 CLIs.
+The runner starts a hub on port 9000, `mock_patient`, `mock_robot`, the state machine, and a bridge that `POST`s every message to `http://127.0.0.1:8000/api/ingest`. Twilio sends or dry-runs from the cloud process. A portal acknowledgement cancels the ladder.
 
 ```bash
-# Automated check (cloud must be on :8000)
 python verify_spine.py
 ```
 
+`verify_spine.py` expects the API on port 8000.
+
 ## Standalone mocks
 
+Start `python ../bus/run_hub.py` first.
+
 ```bash
-# Needs hub: python ../bus/run_hub.py
 python mocks/mock_patient.py --scenario exit_seeking --hub http://127.0.0.1:9000
 python mocks/mock_robot.py --fail-rate 0
 ```
 
-## DimOS combined Aegis + Breadcrumb
-
-This blueprint exposes Aegis and Breadcrumb tools through one Go2 connection
-and one MCP server.
-
-Install or refresh the local blueprint after changing `pyproject.toml`:
+## Live robot, no mocks
 
 ```bash
-source /Users/laminegueye/dimensional-applications/.venv/bin/activate
-cd /Users/laminegueye/Desktop/repos/HackMITdog
-VIRTUAL_ENV=/Users/laminegueye/dimensional-applications/.venv uv pip install -e .
+python run_orchestrator.py --bus-url ws://127.0.0.1:9000/ws --cloud http://127.0.0.1:8000
 ```
 
-Run on the Go2:
+This process publishes a startup config. The patient name in that default is Arthur, while the portal default is Susan. Push the household config after startup when both are running.
 
-```bash
-dimos run hackmitdog.aegis-breadcrumb-agentic --robot-ip 192.168.12.1 --unitree-aes-128-key "$UNITREE_AES_128_KEY" --model openai:muse-spark-1.3
-```
-
-Verify from another terminal using the same virtual environment:
-
-```bash
-dimos mcp status
-dimos mcp list-tools
-```
-
-The tool list includes the Aegis tools and Breadcrumb's
-`start_breadcrumb_recording`, `stop_breadcrumb_recording`, `breadcrumb_status`,
-`clear_breadcrumbs`, and `take_me_home`. Movement tools use DimOS's shared
-`movement` capability, so movement commands are mutually exclusive.
+DimOS blueprints are registered in the repo `pyproject.toml`. Install this repo into the virtualenv that already has DimOS (`pip install -e .` or `uv pip install -e .` from the repository root), then `dimos run` the blueprint you want. `hackmitdog.breadcrumb` is the combined non-LLM entry. `hackmitdog.aegis-breadcrumb-agentic` adds an MCP client. Pass that install’s robot address, AES key, and model flags. Do not start `MockRobot` on the same bus.

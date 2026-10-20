@@ -1,42 +1,36 @@
-# Night Watch portal (frontend)
+# Night Watch portal
 
-React + Vite UI for Lantern. Lives under `/cloud/web`. Needs the FastAPI backend running too — full setup is in [`../README.md`](../README.md).
+React and Vite UI under `cloud/web`. The API has to be running. Install and environment variables are in the [root README](../../README.md) and the [cloud README](../README.md).
 
 ## Prerequisites
 
-- **Node.js 20+** (`node -v`)
-- Backend on `http://127.0.0.1:8000` (see parent README)
+- Node.js 20.19+ or 22.12+
+- API on `http://127.0.0.1:8000`
 
-## Install (once)
-
-```bash
-cd cloud/web
-npm install
-```
-
-Optional phone tunnel: copy `.env.example` → `.env.local` and set `VITE_PUBLIC_ORIGIN` (see parent README).
-
-## Run
+## Install and run
 
 ```bash
 cd cloud/web
+npm ci
 npm run dev
 ```
 
-Open **http://127.0.0.1:5173**
+Open http://127.0.0.1:5173.
 
-| Path | What |
+| Path | Screen |
 |---|---|
-| `/` | Welcome / QR share |
-| `/onboarding` | Zones + schedule |
-| `/watch` | Live Night Watch dashboard |
+| `/` | Welcome |
+| `/onboarding` | Map, zones, routine |
+| `/watch` | Night Watch |
 
-Vite proxies `/api` and `/ws` to the backend on port 8000 — you do **not** need to point the browser at `:8000` for the UI.
+Vite proxies `/api`, `/ws`, and `/voice` to port 8000.
 
-## Other scripts
+For a phone tunnel, copy [`.env.example`](.env.example) to `.env.local` and set `VITE_PUBLIC_ORIGIN`. Restart Vite after changing it.
 
 ```bash
-npm run build    # production build
-npm run preview  # serve the build
-npm run lint     # oxlint
+npm run build
+npm run preview
+npm run lint
 ```
+
+Shipped colors and type are in [`design.md`](design.md) and `src/index.css`.

@@ -1,15 +1,15 @@
-co# Aegis skill testing — exact commands
+# Aegis skill testing — exact commands
 
 Companion to `DIMOS_SKILL_IMPLEMENTATION_PLAN.md`. Every command below uses the real, confirmed
 `dimos mcp` CLI syntax (`dimos/cli/dimos.py`, `dimos/cli/commands/mcp.py`) — nothing here is
 invented. Run everything from the venv that has both `dimos` and this repo installed:
 
 ```bash
-source /Users/laminegueye/dimensional-applications/.venv/bin/activate
-cd /Users/laminegueye/Desktop/repos/HackMITdog
-# This venv has no `pip` module bootstrapped; use uv against it instead
-# (confirmed working: `uv pip install -e .` installs hackmitdog==0.1.0 in ~1s).
-VIRTUAL_ENV=/Users/laminegueye/dimensional-applications/.venv uv pip install -e .
+# Activate the virtualenv that already has DimOS, then install this repo into it.
+source /path/to/dimos-venv/bin/activate
+cd /path/to/Lantern-HackMIT2026
+# If that venv has no pip module, point uv at it:
+VIRTUAL_ENV=/path/to/dimos-venv uv pip install -e .
 ```
 
 ## Launching

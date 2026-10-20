@@ -1,4 +1,4 @@
-"""Pydantic mirrors of docs/04-interfaces.md. Local until E4 ships /bus."""
+"""Pydantic mirrors of docs/04-interfaces.md for the cloud process."""
 
 from __future__ import annotations
 

@@ -5,7 +5,7 @@ export type MapBounds = { width: number; height: number }
 export const DEFAULT_BOUNDS: MapBounds = { width: 2.0, height: 2.0 }
 export const SVG = { width: 480, height: 480, pad: 24 }
 
-/** @deprecated prefer passing bounds — kept for call sites during migration */
+/** Same bounds as DEFAULT_BOUNDS. No portal file imports this alias. */
 export const MAP_METRES = DEFAULT_BOUNDS
 
 export function worldToSvg(

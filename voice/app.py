@@ -1,4 +1,4 @@
-"""Single-process mobile voice prototype; temporary session relay for E1/E3/E4."""
+"""Phone voice service: pairing, check-ins, robot-request transcripts, and speech providers."""
 import asyncio
 import io
 from collections import deque

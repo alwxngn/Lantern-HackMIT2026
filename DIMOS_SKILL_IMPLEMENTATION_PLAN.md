@@ -1,16 +1,17 @@
 # DimOS skill implementation plan — Aegis/Lantern Go2 companion skills
 
-**Status:** Phase 1 (investigation) complete, including a revision pass after deeper investigation
+**Status (October 2026):** historical investigation notes. The skills described here now live under `hackmitdog/aegis/` and are registered in `pyproject.toml`. Read the [root README](README.md) for what shipped. Absolute paths below were one developer’s machine; use the DimOS virtualenv you actually have installed. DimOS is still a separate package, not vendored in this repo.
+
+**Original status:** Phase 1 (investigation) complete, including a revision pass after deeper investigation
 of perception/detection and spatial-memory internals corrected two items in an earlier draft (see
 §3 and the "resolved" notes in §9). This plan is based on reading the actual installed DimOS
 source, not on assumption.
 
 ## 0. Where things actually live
 
-**This repo (`HackMITdog`) is not DimOS.** It is the planning repo for a HackMIT project
-(product name **Lantern**, code name in this task's brief was "Aegis") — see `README.md` and
-`docs/`. It currently contains one stub module (`hackmitdog/behaviors.py`) registered as a DimOS
-blueprint entry point:
+**This repo is not DimOS.** It is the HackMIT project (product name **Lantern**, skill package
+name **Aegis**). `hackmitdog/behaviors.py` is one blueprint entry point. The companion skills
+were added later under `hackmitdog/aegis/`. The entry-point table at the time of this note was:
 
 ```toml
 [project.entry-points."dimos.blueprints"]
@@ -19,14 +20,9 @@ behaviors = "hackmitdog.behaviors:DogBehaviors"
 
 **DimOS itself is a separately installed package**, not vendored into this repo:
 
-```
-/Users/laminegueye/dimensional-applications/.venv/lib/python3.12/site-packages/dimos   (v0.0.14)
-```
-
-Everything below cites real files at that path. Run `dimos` commands from that venv
-(`source /Users/laminegueye/dimensional-applications/.venv/bin/activate`, or call the venv's
-`dimos` binary directly), from a working directory where `hackmitdog` is installed
-(`pip install -e .` from this repo, into that venv, so the entry point is discoverable).
+The investigation read DimOS **0.0.14** from a local virtualenv (`site-packages/dimos`).
+Run `dimos` from the virtualenv where it is installed, with this repo installed editable
+(`pip install -e .`) so the entry points are discoverable.
 
 **Note on scope vs. this repo's other docs:** `docs/02-blueprint.md`, `docs/04-interfaces.md`,
 `docs/06-safety-ethics.md`, and `docs/11-perception.md` already specify a different, more
