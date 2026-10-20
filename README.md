@@ -239,12 +239,10 @@ Checked on Python 3.12 with the four requirements files above, and Node 22:
 
 ## Team
 
-Names follow git author names. Handles are used where the commits do not record a full name.
-
-- Ally Chen
+- Ally 
 - Javi
-- Lamine (goldensnub)
-- Alex (alwxngn; one commit is authored as 28anguyen on the same email)
+- Lamine 
+- Alex 
 
 ## Known limitations
 
