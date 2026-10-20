@@ -90,7 +90,7 @@ Ninety minutes, not four hours. Decide fast, then build.
 
 - [ ] **All, 20 minutes, together:** agree the cuts in `01-judge-review.md` and `10-second-pass.md`.
       Argue now, not at 2 AM. Name locked: Lantern.
-- [ ] **All:** freeze `04-interfaces.md`, with the `tracker` field added from `11-perception.md`.
+- [ ] **All:** freeze `../04-interfaces.md`, with the `tracker` field added from `11-perception.md`.
       Still the most valuable half hour of the event.
 - [ ] **E2 first, before anything else:** confirm the robot's SKU and that it powers on, walks
       under teleop, and exposes the SDK. Count batteries and find the charger. **If the robot

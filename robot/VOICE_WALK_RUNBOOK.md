@@ -14,27 +14,25 @@ Phone → STT → cloud voice service → bus → orchestrator
 
 ## One-time setup
 
+From the repository root, same environment as the [root README](../README.md):
+
 ```bash
-cd cloud
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt -r ../voice/requirements.txt -r ../orchestrator/requirements.txt
-cd web && npm install
-cd ../..
+python -m pip install -r cloud/requirements.txt -r voice/requirements.txt -r orchestrator/requirements.txt -r bus/requirements.txt
+npm --prefix cloud/web ci
 ```
 
 ## Mock run
 
-Start these terminals in order.
+Start these terminals in order, each from the repository root.
 
 ### Terminal 1: cloud API
 
 ```bash
 export LANTERN_ORCH_PUBLISH_URL=http://127.0.0.1:9000
-cd cloud
 source .venv/bin/activate
-cd server
-uvicorn main:app --reload --host 0.0.0.0 --port 8000
+python -m uvicorn main:app --app-dir cloud/server --reload --host 0.0.0.0 --port 8000
 ```
 
 `LANTERN_ORCH_PUBLISH_URL` is the cloud-to-orchestrator transcript route.
@@ -42,8 +40,7 @@ uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ### Terminal 2: portal
 
 ```bash
-cd cloud/web
-npm run dev
+npm --prefix cloud/web run dev
 ```
 
 Open `http://127.0.0.1:5173`.
@@ -51,12 +48,11 @@ Open `http://127.0.0.1:5173`.
 ### Terminal 3: orchestrator, bus, and mock robot
 
 ```bash
-cd orchestrator
 source .venv/bin/activate
-python run_spine.py --scenario calm --hub-port 9000
+python orchestrator/run_spine.py --scenario calm --hub-port 9000
 ```
 
-Pair the phone, tap **Start Lantern**, then tap **Speak to Lantern** and say:
+Pair the phone, tap **Start Lantern**, then tap **Speak a robot request** and say:
 
 ```text
 Take me for a walk
@@ -155,9 +151,9 @@ Open the HTTPS portal URL, create the session there, and scan its pairing QR.
 echo "$LANTERN_ORCH_PUBLISH_URL"
 curl http://127.0.0.1:9000/
 node --check voice/static/phone.js
-PYTHONPATH=robot cloud/.venv/bin/python -m unittest discover -s robot/tests -v
-cloud/.venv/bin/python -m unittest discover -s orchestrator/tests -v
-cloud/.venv/bin/python -m unittest discover -s voice/tests -v
+PYTHONPATH=robot .venv/bin/python -m unittest discover -s robot/tests -v
+.venv/bin/python -m unittest discover -s orchestrator/tests -v
+.venv/bin/python -m unittest discover -s voice/tests -v
 npm --prefix cloud/web run build
 ```
 

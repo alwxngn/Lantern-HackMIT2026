@@ -1,6 +1,6 @@
 # E3 — Portal and cloud playbook
 
-Owner: E3. Folder: `/cloud`. Schemas: `04-interfaces.md`. Workflow: `15-dev-workflow.md`.
+Owner: E3. Folder: `/cloud`. Schemas: `04-interfaces.md`. Workflow: `archive/15-dev-workflow.md`.
 
 This is the working checklist for the caregiver portal, FastAPI cloud, Twilio ladder,
 onboarding, and morning report. It does not replace the build plan — it makes E3's slice
@@ -19,7 +19,7 @@ of it executable.
 | Morning report | |
 
 **Hard rule:** the dashboard renders from the event stream alone. No demo mode. If it needs a
-hack to look right, it's wrong (`03-build-plan.md`).
+hack to look right, it's wrong (`archive/03-build-plan.md`).
 
 **Hard rule:** never import a Unitree or DimOS SDK into `/cloud`. The only robot connection is
 JSON on the bus.
@@ -244,14 +244,14 @@ Zone wire values stay `safe` | `watch` | `exit` (UI label for `exit` = **"Don't 
 - Schemas in `04-interfaces.md` are frozen. If a task needs a new message type or renamed field,
   stop and say so — E4 edits `/bus` after the team agrees out loud.
 - Short-lived branch `e3/cloud-scaffold` until the 6 PM spine gate; merge to `main` before that
-  gate, then trunk-based (`15-dev-workflow.md` §3).
+  gate, then trunk-based (`archive/15-dev-workflow.md` §3).
 - Commit after every agent turn that changes behavior. Pull before every prompt.
 - Human attention goes to ladder timers and ack cancellation — not dashboard polish
-  (`15-dev-workflow.md` §7).
+  (`archive/15-dev-workflow.md` §7).
 
 ## Demo beats that depend on E3
 
-From `05-demo.md`:
+From `archive/05-demo.md`:
 
 1. Dashboard shows agitation rise + `reason` string during pacing.
 2. Phone lights up on escalate; judge can pick it up / tap ack link.

@@ -1,6 +1,6 @@
 # Aegis skill testing — exact commands
 
-Companion to `DIMOS_SKILL_IMPLEMENTATION_PLAN.md`. Every command below uses the real, confirmed
+Companion to `../../DIMOS_SKILL_IMPLEMENTATION_PLAN.md`. Every command below uses the real, confirmed
 `dimos mcp` CLI syntax (`dimos/cli/dimos.py`, `dimos/cli/commands/mcp.py`) — nothing here is
 invented. Run everything from the venv that has both `dimos` and this repo installed:
 
