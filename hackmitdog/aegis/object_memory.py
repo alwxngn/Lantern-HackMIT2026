@@ -18,7 +18,7 @@ under the object's name instead of a place's name.
   step in ``search_for_object``, the same interface
   ``locations.py``'s ``go_to_named_location`` drives.
 
-**Real DimOS limitation (confirmed from source, not assumed):**
+**DimOS limitation:**
 ``SpatialMemory.add_named_location(name, position=None, rotation=None,
 description=None)`` has no ``room``/``metadata`` parameter, and there is no
 real structured-metadata field this module can write through the ``@rpc``

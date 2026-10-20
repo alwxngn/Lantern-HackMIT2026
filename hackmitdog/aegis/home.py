@@ -11,26 +11,14 @@ Reuses the exact same navigate+wait-for-arrival mechanism
 - ``NavigationInterfaceSpec.set_goal`` / ``cancel_goal``
   (``dimos.navigation.navigation_spec``) for the actual movement.
 
-**Docking/charging, confirmed by a targeted grep of the installed DimOS
-package (`grep -rIn "dock|charg"` across every `.py` file, excluding
-`__pycache__` and the vendored `data/repo` copy) before writing this file**:
-no autonomous-docking or charge-initiation API exists anywhere in this DimOS
-install. The only real hits are battery *percentage* reporting —
-`GO2Connection.get_battery_soc`/`battery_soc`
-(`dimos/robot/unitree/go2/connection.py`, reading a `bms_state.soc` field)
-and an analogous Boston Dynamics Spot `charge_percentage` helper in
-`dimos/experimental/robot/bosdyn/`. Every other `dock`/`charg` hit is
-unrelated (CSS `dock: bottom` in two TUI files, the word "docker" in
-build/CI code, "state of charge" as the SOC field's own name). This confirms
-the plan's existing conclusion rather than correcting it:
-`return_to_home` stops at a named pose and reports arrival — it never claims
-charging or docking happened.
+This DimOS install reports battery percentage
+(``GO2Connection.get_battery_soc`` / ``battery_soc``) and has no
+autonomous-docking or charge-initiation API. ``return_to_home`` stops at a
+named pose and reports arrival. It does not claim that charging or docking
+happened.
 
-This module is deliberately self-contained: it does not import
-``hackmitdog.aegis.locations`` and instead duplicates the small
-poll-until-arrival helper, matching ``navigation_skills.py`` and
-``object_memory.py``'s stated convention of small per-``Module`` helpers
-rather than cross-module inheritance.
+The arrival poll is local to this module, same pattern as
+``navigation_skills.py`` and ``object_memory.py``.
 
 No DimOS code is modified.
 """
@@ -99,22 +87,9 @@ class HomeSkills(Module):
 
     tf: In[TFMessage]
 
-    # Battery reporting: GO2Connection.get_battery_soc()/battery_soc() is
-    # already a real, agent-callable @skill/@rpc (dimos/robot/unitree/go2/
-    # connection.py), but it's reached through GO2ConnectionSpec
-    # (dimos/robot/unitree/go2/connection_spec.py), which only declares
-    # `publish_request` today -- not battery_soc. Injecting a `_connection:
-    # GO2ConnectionSpec`-typed attribute here would need a second local
-    # extended spec (like ExtendedSpatialMemorySpec, but for
-    # GO2ConnectionSpec) whose structural match against the real
-    # GO2Connection module can't be verified against hardware/sim from this
-    # environment. Given `get_battery_soc` is already independently callable
-    # as its own MCP tool, that extra surface/risk isn't worth it here --
-    # skipped. If battery-in-the-same-call-result is wanted later, add an
-    # `ExtendedGO2ConnectionSpec(GO2ConnectionSpec, Spec, Protocol)` declaring
-    # `battery_soc(self) -> int | None` next to `spec_ext.py`, inject
-    # `_connection: ExtendedGO2ConnectionSpec` here, and fold
-    # `self._connection.battery_soc()` into this skill's metadata.
+    # Battery percentage is already its own DimOS tool
+    # (GO2Connection.get_battery_soc). GO2ConnectionSpec does not declare
+    # battery_soc, so this skill does not inject the connection to report it.
 
     @skill(uses=[CAP_MOVEMENT])
     def return_to_home(
@@ -122,16 +97,11 @@ class HomeSkills(Module):
     ) -> SkillResult[AegisError]:
         """Navigate to the named home location and wait to arrive.
 
-        This only drives to a previously saved pose — it does **not**
-        initiate charging or docking. No autonomous-docking or
-        charge-detection API exists anywhere in the installed DimOS package
-        (confirmed by a targeted grep across the whole package before writing
-        this skill; the only real hits were battery *percentage* reporting,
-        not docking). On success this reports `outcome:
-        "arrived_at_dock_pose"` — arrival at the pose, nothing more. If you
-        need to check battery level, call `get_battery_soc` separately
-        (`dimos.robot.unitree.go2.connection.GO2Connection`, already its own
-        agent-callable tool).
+        This only drives to a previously saved pose. It does not initiate
+        charging or docking. On success this reports `outcome:
+        "arrived_at_dock_pose"` — arrival at the pose, nothing more. Call
+        `get_battery_soc` separately for battery level
+        (`dimos.robot.unitree.go2.connection.GO2Connection`).
 
         Does not invent a default home pose: if `home_name` was never saved,
         this fails rather than guessing a position.

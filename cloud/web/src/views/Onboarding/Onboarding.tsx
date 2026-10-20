@@ -353,7 +353,7 @@ export function Onboarding() {
             className="h-full rounded-full bg-white transition-[width] duration-300"
             style={{ width: `${(step / steps.length) * 100}%` }}
           />
-          {/* Each fifth of the bar jumps to that step, so the old tabs' behaviour is kept. */}
+          {/* Each segment of the bar jumps to that step. */}
           <div className="absolute inset-x-0 -inset-y-2 flex">
             {steps.map((s) => (
               <button

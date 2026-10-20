@@ -1,31 +1,31 @@
 # Lantern
 
-A caregiver portal and paired-phone voice check-in for a Unitree Go2 companion, built at HackMIT 2026.
+A caregiver portal and a paired phone for a Unitree Go2 companion, built for families supporting someone with dementia.
 
 **Demo:** [HackMIT 2026 project page](https://plume.hackmit.org/project/krpqx-lffop-wpuom-ttmme) · [Demo video (YouTube)](https://www.youtube.com/watch?v=UiwDwaL6978)
 
 [![Lantern demo video](https://img.youtube.com/vi/UiwDwaL6978/maxresdefault.jpg)](https://www.youtube.com/watch?v=UiwDwaL6978)
 
-Lantern is a 24-hour hackathon prototype (HackMIT 2026, September 19–20) for families supporting someone with dementia. A caregiver sets up the household in a web app, sends a spoken check-in to a paired phone, and watches Night Watch alerts, maps, and activity from the same event stream. Spoken robot requests can walk, follow, return home, or play a fixed set of Go2 actions when DimOS and the robot bridges are running. The phone is the microphone and speaker. It does not talk to the Go2 directly.
+Lantern is a 24-hour hackathon prototype from HackMIT 2026 (September 19–20). It is the finished hackathon build in this repository, not a launched product. A caregiver sets up the household in a web app, sends a spoken check-in to a paired phone, and watches Night Watch alerts, maps, and activity from one event stream. Spoken requests can walk, follow, return home, or play a fixed set of Go2 actions when DimOS and the robot bridges are running. The phone is the microphone and speaker. It does not talk to the Go2 directly. The robot skill package still uses the earlier name **Aegis**.
 
-This repository is the finished hackathon build. The planning notes in [`docs/`](docs/) describe a wider product than the code implements. The robot skill package still uses the earlier name **Aegis**.
+The planning notes in [`docs/`](docs/) describe a wider product than the code implements. The [project page](https://plume.hackmit.org/project/krpqx-lffop-wpuom-ttmme) includes the same pitch plus ideas listed under “what’s next.”
 
 ## Features
 
-- **Caregiver portal** (`cloud/web`): onboarding, household check-ins, daily routine editing, Night Watch, 2D zone map, 3D point-cloud viewer, alerts, activity timeline, and a scripted demo walk.
+- **Caregiver portal** (`cloud/web`): onboarding, household check-ins, daily routine editing, Night Watch, a 2D zone map, a 3D point-cloud viewer, alerts, an activity timeline, and a scripted demo walk.
 - **Paired phone** (`voice/`): QR pairing, WebSocket delivery, ElevenLabs playback, a five-second reply recording after a check-in, typed replies, and a separate ten-second robot-request control.
 - **Speech**: Deepgram transcription of a finished recording (`nova-3` by default). ElevenLabs synthesis (`eleven_flash_v2_5` by default), including an optional onboarding voice sample uploaded to ElevenLabs `/v1/voices/add`.
 - **Check-in dialogue**: one fixed acknowledgment, plus keyword flagging for words such as “help”, “pain”, and “scared”.
 - **Robot requests**: phrase matching in `orchestrator/lantern_orch/intent.py` (walk, follow, home confirmation, stop, and named sport actions such as sit, stand, wave, dance, jump, and flip). The command bridge calls DimOS MCP tools.
 - **Companion skills** (`hackmitdog/aegis/`): named locations, relative navigation, person follow, guided routes, danger-zone geometry, object-location memory, home navigation, and room mapping.
 - **Night Watch**: zone and track events drive `IDLE`, `ATTEND`, `LEAD`, `ESCALATE`, and `EMERGENCY`, plus walk states `WALK`, `FOLLOW`, `CONFIRM_HOME`, and `GUIDE_HOME`. Alerts can escalate to Twilio SMS and calls. Acknowledgement cancels the ladder.
-- **Hardware-free demo**: `orchestrator/run_spine.py` runs the bus, mocks, state machine, and cloud bridge. Onboarding can also load a schematic floor plan.
+- **Hardware-free demo**: `orchestrator/run_spine.py` runs the bus, mocks, state machine, and cloud bridge. Onboarding can load a schematic floor plan.
 
 ## Tech stack
 
 | Layer | Stack |
 |---|---|
-| Portal | React 19, TypeScript, Vite, Tailwind CSS 4, React Router |
+| Portal | React 19, TypeScript, Vite 8, Tailwind CSS 4, React Router |
 | Cloud API | FastAPI, Uvicorn, Pydantic. JSONL event log and an in-memory projection |
 | Voice | FastAPI, mounted on the cloud app at `/voice`. Deepgram and ElevenLabs over HTTP |
 | Bus | FastAPI hub: `POST /publish`, WebSocket `/ws` |
@@ -33,7 +33,7 @@ This repository is the finished hackathon build. The planning notes in [`docs/`]
 | Robot | Separate processes call `dimos mcp`. Skills are DimOS blueprints in `pyproject.toml` |
 | Notifications | Twilio Python helper. Missing credentials log a dry run |
 
-Python **3.12+** (`pyproject.toml`). The portal build was run here on Node **22.23.3** with Vite 8. DimOS and a Go2 are required only for live robot and live mapping.
+Python **3.12+** (`pyproject.toml`). [`cloud/web/README.md`](cloud/web/README.md) lists Node **20.19+** or **22.12+** for the portal. DimOS and a Go2 are required only for live robot motion and live mapping.
 
 ## Architecture
 
@@ -91,6 +91,8 @@ cp cloud/.env.example cloud/.env
 `voice/app.py` loads the root `.env` with `override=True`. `cloud/server/notify.py` loads `cloud/.env`. The orchestrator and robot bridges read process environment variables and do not load a dotenv file.
 
 ### Environment variables
+
+Listed by name. Defaults live in the example files.
 
 **Repository-root `.env`** (see [`voice/.env.example`](voice/.env.example)):
 
@@ -181,7 +183,7 @@ With the API already on port 8000:
 python orchestrator/run_spine.py --scenario exit_seeking
 ```
 
-The spine starts its own bus hub on port 9000, then exits after the scenario. For a longer session: `python orchestrator/run_spine.py --scenario calm --hold 3600`. The dashboard also has a scripted demo walk. Run the live robot consumer on a different bus from `MockRobot`.
+The spine starts its own bus hub on port 9000, then exits after the scenario. For a longer session: `python orchestrator/run_spine.py --scenario calm --hold 3600`. The dashboard has a scripted demo walk. Run the live robot consumer on a different bus from `MockRobot`.
 
 Replay a fixture without the spine:
 
@@ -226,7 +228,7 @@ npm --prefix cloud/web run lint
 npm --prefix cloud/web run build
 ```
 
-Checked on Python 3.12 with the four requirements files above, and Node 22:
+A run already recorded in this repository, on Python 3.12 with the four requirements files above and Node 22:
 
 | Command | Result |
 |---|---|
@@ -237,23 +239,29 @@ Checked on Python 3.12 with the four requirements files above, and Node 22:
 | `npm run lint` | exits 0, with oxlint warnings in `Map3D.tsx` and `MorningReport.tsx` |
 | `npm run build` | passes (`tsc -b` and Vite) |
 
+Those mismatch notes still match the current tests: `orchestrator/tests/test_remote_bus.py` calls `RemoteBus._dispatch_if_new`, and the two Playwright tests import `playwright`, which is listed only in `voice/requirements-dev.txt`.
+
 `python -m voice.check_providers` and the Playwright scripts under `voice/tests/` call live speech APIs or a browser. They are optional.
 
 `hackmitdog/aegis/test_danger_zone_geometry.py` is a geometry script next to the skill, not part of the unittest discovery paths above.
 
 ## Team
 
-- Ally 
-- Javi
-- Lamine 
-- Alex 
+Draft. Every row is inferred from git history and still needs confirmation from the team.
+
+| Name | Draft areas |
+|---|---|
+| Ally Chen ([allyytc](https://github.com/allyytc)) | caregiver portal, onboarding, Night Watch, check-ins, demo walk |
+| Javi ([JaviF96](https://github.com/JaviF96)) | paired-phone voice, speech providers, check-ins |
+| Lamine ([goldensnub](https://github.com/goldensnub)) | Go2 skills, person follow, mapping, speech-to-robot |
+| Alex Nguyen ([alwxngn](https://github.com/alwxngn)) | cloud API, event bus, orchestrator, portal scaffold |
 
 ## Known limitations
 
-- Check-in replies are the fixed sentence in `voice/dialogue.py`. Keyword hits flag the transcript for the caregiver. There is no conversational model in the phone service.
+- Check-in replies are the fixed sentence in `voice/dialogue.py`. Keyword hits flag the transcript for the caregiver. The phone service has no conversational model.
 - Transcription waits for a completed upload. Check-in recordings stop after five seconds, robot requests after ten seconds, and uploads over 5 MiB are rejected.
 - Phrase matching covers the phrases in `intent.py`. It has a small confirmation vocabulary and does not handle open-ended requests.
-- Pairing uses per-session tokens. Portal, ingest, and bus routes do not have user accounts.
+- Pairing uses per-session tokens. Portal, ingest, and bus routes have no user accounts.
 - Configuration, sessions, and the live projection are in memory. Restarting the API drops them. The JSONL log is an event record, not a full restore.
 - Onboarding contacts and the preset household are portal data. Twilio destinations come from `TWILIO_TO_*`. The call flow has no DTMF webhook; acknowledgement is the portal or `/api/ack`.
 - `orchestrator/run_orchestrator.py` still publishes a startup config whose patient name is Arthur. The portal and cloud defaults use Susan. Apply the household config after the orchestrator starts if those processes run together.
