@@ -13,7 +13,7 @@ from store import store
 
 logger = logging.getLogger("lantern.escalation")
 
-# Demo-friendly defaults; production values from blueprint §5
+# Default SMS and call delays. LANTERN_FAST_LADDER=1 replaces them below.
 L3_AFTER_S = float(__import__("os").getenv("LADDER_L3_AFTER_S", "60"))
 L4_AFTER_S = float(__import__("os").getenv("LADDER_L4_AFTER_S", "120"))
 

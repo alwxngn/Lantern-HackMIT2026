@@ -26,15 +26,10 @@ Reuses DimOS's person-perception and person-follow stack (see
 
 No DimOS code is modified.
 
-**One gap this file deliberately does NOT paper over** (see plan §3, §6 rows
-7/8, §8; the `follow_distance_m` gap noted here in earlier revisions of this
-file is resolved -- see ``follow_person``'s own docstring):
-
-DimOS has no "is the person still following/nearby" primitive independent of
-a transient per-call detection. ``escort_person`` therefore only confirms a
-person is present *before* departing, then navigates and reports arrival --
-it does not and cannot verify the person stayed with the robot during the
-walk.
+``escort_person`` confirms a person is present before departing, then
+navigates and reports arrival. DimOS has no separate "still nearby" signal,
+so the skill does not check that the person stayed with the robot. Follow
+distance is set in ``follow_person``.
 """
 
 from __future__ import annotations
@@ -243,17 +238,12 @@ class PersonSkills(Module):
     ) -> tuple[Detection2DBBox, None] | tuple[None, SkillResult[AegisError]]:
         """Run the local YOLO detector on one frame and return the highest-confidence hit.
 
-        Shared by `detect_person` and `follow_person` -- this is deliberately
-        the same local, no-external-API detector both use, so `follow_person`
-        can supply a real bounding box (`initial_bbox`) to DimOS's
-        `PersonFollowSkillContainer` without ever going through its VL-model
-        text-query path (`get_object_bbox_from_image`, which calls Alibaba's
-        hosted Qwen-VL and requires `ALIBABA_API_KEY`). If there are multiple
-        people in frame, this always picks the single highest-confidence
-        detection -- there is no way to select "the person in the blue
-        shirt" specifically without that VL model, so `follow_person`'s
-        `query` argument is a label for messages/logs only, not something
-        that discriminates between multiple people.
+        Shared by `detect_person` and `follow_person`. Both use this local
+        detector so `follow_person` can pass `initial_bbox` to DimOS's
+        `PersonFollowSkillContainer` and skip its VL text-query path
+        (`get_object_bbox_from_image`, which calls hosted Qwen-VL and needs
+        `ALIBABA_API_KEY`). With several people in frame, this returns the
+        highest-confidence detection. `query` is a log label only.
         """
         try:
             detections = self._person_detector.process_image(image)
@@ -274,17 +264,13 @@ class PersonSkills(Module):
     ) -> tuple[Detection2DBBox, Image, None] | tuple[None, None, SkillResult[AegisError]]:
         """Repeatedly grab a frame and run `_detect_best_person` until one hits or `timeout_s` elapses.
 
-        A single frame can miss a person who is plainly in view -- this
-        exists because a live run showed `follow_person` reporting
-        `PERSON_NOT_FOUND` on someone sitting right in front of the camera,
-        purely because the one frame it happened to grab was a bad sample.
+        One frame can miss a person who is in view. A live run returned
+        `PERSON_NOT_FOUND` for someone sitting in front of the camera.
         Retries every `_PERSON_ACQUIRE_POLL_INTERVAL_S` (~1s) for up to
-        `timeout_s` (default 10s) before giving up -- deliberately bounded
-        well under the MCP client's 120s request timeout, since both
-        `detect_person` and `follow_person` block the calling MCP request
-        for the entire acquisition window. For open-ended "let me know
-        whenever a person shows up" waiting with no such bound, use
-        `look_out_for` instead (a separate, standing DimOS skill).
+        `timeout_s` (default 10s). That window stays under the MCP client's
+        120s request timeout because `detect_person` and `follow_person`
+        block the calling request until acquisition finishes. Open-ended
+        waiting belongs to DimOS's `look_out_for` skill.
 
         Returns the matched frame alongside the detection (not just the
         detection) so callers don't need a second, potentially-inconsistent
