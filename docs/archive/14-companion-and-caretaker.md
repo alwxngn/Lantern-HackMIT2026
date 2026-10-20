@@ -45,7 +45,7 @@ does for the cloned voice:
 
 > *"Your son sent you this message: 'Hi Mom, thinking of you today, I'll call after dinner.'"*
 
-This is not a new architecture — it's the `say` schema's `attribution` field (`04-interfaces.md`)
+This is not a new architecture — it's the `say` schema's `attribution` field (`../04-interfaces.md`)
 doing one more job. The anti-impersonation guard already in `12-dialogue-runtime.md` applies
 unchanged: the robot relays what Michael said, it never speaks *as* Michael. Text-to-speech can
 use the neutral robot voice or, if there's time, the sender's own consented voice clip — same
@@ -76,7 +76,7 @@ impersonate. Companionship mode is not a new policy — it's the existing policy
 often, on lower-stakes material.
 
 **Build:** extend the system prompt template with three new profile fields, extend
-`config_update.patient` in `04-interfaces.md` (below). No new runtime component.
+`config_update.patient` in `../04-interfaces.md` (below). No new runtime component.
 
 ## 3. Onboarding v2 — schedule and habits (cheap, Tier 1)
 
@@ -120,7 +120,7 @@ The caregiver-facing label for the zone class currently called `exit` becomes **
 the onboarding UI, matching how a non-technical caregiver actually thinks about it — a zone
 isn't always literally an exit (it might be "the basement stairs" or, outdoors, "the road").
 
-**Keep the wire value as `exit` internally** (it's already used throughout `04-interfaces.md`,
+**Keep the wire value as `exit` internally** (it's already used throughout `../04-interfaces.md`,
 `06-safety-ethics.md`, and the review docs) and add the caregiver-facing label as metadata:
 
 ```json
@@ -273,7 +273,7 @@ isn't, and never let it be the thing the climax depends on.
 - `03-build-plan.md` — ownership gains a line each for E1 (companionship prompt, check-in relay,
   reminders), E2/E4 (`FOLLOW`/`GUIDE_HOME`, breadcrumb retrace, ArUco final-approach detection),
   E3 (schedule/habits fields, zone label, live map during `FOLLOW`, home/route setting).
-- `04-interfaces.md` — new message types and field additions, listed in full there.
+- `../04-interfaces.md` — new message types and field additions, listed in full there.
 - `06-safety-ethics.md` — the completed wandering policy and the re-confirmation rule are safety
   policy, not features, and belong in the envelope table.
 - `05-demo.md` and `09-judge-qa.md` — the breadcrumb-retrace explanation above is a rehearsed

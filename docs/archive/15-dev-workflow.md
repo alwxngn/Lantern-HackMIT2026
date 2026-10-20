@@ -8,7 +8,7 @@ minutes of diff in ninety seconds. That combination breaks a normal PR-review wo
 breaks it fastest exactly where `01-judge-review.md` P0-5 already said projects die: the seam.
 
 The fix isn't a process. It's **making the seam a file, not a conversation** — which
-`04-interfaces.md` already did for humans. This document extends the same idea to agents that
+`../04-interfaces.md` already did for humans. This document extends the same idea to agents that
 have never seen each other's chat history and never will.
 
 ## 1. Repo layout: one folder per subsystem, one owner per folder
@@ -37,7 +37,7 @@ now auto-discover this filename; for the ones that don't, paste it into the firs
 session). It should be short — a few dozen lines — and contain only what every agent needs
 regardless of which subsystem it's working in:
 
-- Link to `04-interfaces.md`: **the schemas are frozen; don't invent new message types or
+- Link to `../04-interfaces.md`: **the schemas are frozen; don't invent new message types or
   rename fields.** If the task seems to need one, stop and say so instead of improvising.
 - Link to `06-safety-ethics.md`'s hard rules (never block, never impersonate, consent before
   any cloned voice, yield reflex is a controller-level reflex not a state transition).
@@ -74,7 +74,7 @@ work in one turn, and a branch that's a few hours old will conflict badly by the
   confidently rewrites something that already changed underneath it.
 - **A merge conflict outside your own folder is a "stop and get in the room" event**, not
   something to resolve solo or auto-resolve. If two people's changes collide in `/bus`, that's
-  the interface-freeze rule from `04-interfaces.md` firing exactly as designed — treat it the
+  the interface-freeze rule from `../04-interfaces.md` firing exactly as designed — treat it the
   same way: all four, out loud, decide, then one person commits the resolution.
 
 ## 4. The schema file is the one file nobody's agent edits alone
@@ -82,7 +82,7 @@ work in one turn, and a branch that's a few hours old will conflict badly by the
 `/bus`'s schema definitions are the seam. E4 owns them, same as E4 owns the orchestrator in
 `02-blueprint.md` §4. If E2's agent decides the `follow_person` command needs one more argument,
 that's a real need but not a unilateral edit — E2 says so out loud, E4 makes the change, everyone
-else's next `git pull` picks it up. This is the same discipline `04-interfaces.md` already
+else's next `git pull` picks it up. This is the same discipline `../04-interfaces.md` already
 states for humans ("changes after the freeze need all four engineers to agree, in the same
 room, out loud") — it just matters more now, because an agent will happily "fix" a schema
 mismatch by changing the schema instead of its own code, and it won't know that three other
@@ -111,7 +111,7 @@ configuration, and it's fine to have ready. **It is not fine to have any agent g
 a "draft" you plan to redo. HackMIT requires project code to be written during the hacking
 window (`10-second-pass.md` P1-8), and "an agent wrote it Thursday and I re-ran the prompt
 Saturday" is not meaningfully different from writing it by hand Thursday. If you want to
-de-risk a subsystem in advance, write more plan (a doc, a schema sketch inside `04-interfaces.md`)
+de-risk a subsystem in advance, write more plan (a doc, a schema sketch inside `../04-interfaces.md`)
 — don't write code.
 
 ## 7. Human-in-the-loop, non-negotiably, for four specific things

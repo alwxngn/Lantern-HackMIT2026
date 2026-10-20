@@ -1,6 +1,6 @@
 # Lantern — open-source citations
 
-Update this file when you add a dependency (HackMIT P1-8 / [`docs/10-second-pass.md`](docs/10-second-pass.md)).
+Update this file when you add a dependency.
 
 ## Cloud / portal (E3)
 

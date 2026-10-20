@@ -24,7 +24,7 @@ Two numbers reported honestly beat four rushed, and beat any number you had to e
 **Budget:** 11 PM – 3 AM, in parallel with Tier 1. **Owner:** E4 coordinates, each engineer runs
 their own.
 
-Everything below is computed from the JSONL bus log (`04-interfaces.md` rule 3), which is why
+Everything below is computed from the JSONL bus log (`../04-interfaces.md` rule 3), which is why
 setting it up in the first two hours pays for itself.
 
 ---

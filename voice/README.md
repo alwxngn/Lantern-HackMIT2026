@@ -6,7 +6,7 @@ Phone microphone, speaker, and session relay. In the combined app the cloud API 
 
 ## Standalone server
 
-Useful for the E1 pages in `voice/static/` without the React portal. From the repository root, with `voice/requirements.txt` installed:
+Useful for the standalone pages in `voice/static/` without the React portal. From the repository root, with `voice/requirements.txt` installed:
 
 ```bash
 python -m uvicorn voice.app:app --host 127.0.0.1 --port 8000

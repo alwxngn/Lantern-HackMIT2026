@@ -46,7 +46,7 @@ recommendation in P0-10 follows directly from this.
 
 ## P0-10: Nothing in the plan says how you track the person, and six things depend on it
 
-This is the real hole. Read `04-interfaces.md` again and notice that `person_track` — with
+This is the real hole. Read `../04-interfaces.md` again and notice that `person_track` — with
 position, velocity, heading, posture, and confidence at 10 Hz — simply *appears*, sourced from
 `robot`. The document specifies the message beautifully and never says how it gets produced.
 

@@ -2,7 +2,7 @@
 
 Closes P0-10. Owner: **E2**, with E4 consuming.
 
-`04-interfaces.md` defines `person_track` precisely and never says where it comes from. Six
+`../04-interfaces.md` defines `person_track` precisely and never says where it comes from. Six
 things depend on it (see `10-second-pass.md` P0-10), including all three safety-envelope rules.
 This document specifies how the message actually gets produced, and in what order to build it.
 

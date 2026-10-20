@@ -212,7 +212,7 @@ can test anything without the robot physically present in the room.
 **Fix, two parts:**
 
 1. **Freeze the interfaces at hour 4.** Every message between subsystems gets a schema and a
-   fake producer *before* anyone builds the real thing. `04-interfaces.md` is the draft; argue
+   fake producer *before* anyone builds the real thing. `../04-interfaces.md` is the draft; argue
    about it early, then stop arguing about it.
 2. **Engineer 4 becomes the orchestrator owner, not the miscellaneous-hardware owner.** They own
    the state machine, the mock event bus, the demo runner, and metrics collection. From hour 6

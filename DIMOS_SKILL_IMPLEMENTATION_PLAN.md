@@ -24,8 +24,8 @@ The investigation read DimOS **0.0.14** from a local virtualenv (`site-packages/
 Run `dimos` from the virtualenv where it is installed, with this repo installed editable
 (`pip install -e .`) so the entry points are discoverable.
 
-**Note on scope vs. this repo's other docs:** `docs/02-blueprint.md`, `docs/04-interfaces.md`,
-`docs/06-safety-ethics.md`, and `docs/11-perception.md` already specify a different, more
+**Note on scope vs. this repo's other docs:** `docs/archive/02-blueprint.md`, `docs/04-interfaces.md`,
+`docs/archive/06-safety-ethics.md`, and `docs/archive/11-perception.md` already specify a different, more
 specific architecture for this exact robot (a bus-message-driven `robot_service` consumed by an
 orchestrator state machine, a fixed safety envelope with exact numbers, an explicitly-cut
 physical-intercept behavior, and a taped-demo-area camera/LiDAR tracker instead of open-vocabulary
@@ -541,7 +541,7 @@ hackmitdog/
     blueprint.py                  # autoconnect(...) composing all of the above onto unitree_go2_spatial
 pyproject.toml                   # add the new blueprint to [project.entry-points."dimos.blueprints"]
 DIMOS_SKILL_IMPLEMENTATION_PLAN.md  # this file
-AEGIS_SKILL_TESTING.md            # Phase-2 deliverable, written alongside each skill
+docs/archive/AEGIS_SKILL_TESTING.md            # Phase-2 deliverable, written alongside each skill
 ```
 
 ---
@@ -564,7 +564,7 @@ existing mechanisms rather than new ones wherever possible:
   `PersonFollowSkillContainer`/`PatrollingModule`/`WavefrontFrontierExplorer`.
 - **Never intentionally moving into a person**: `intercept_danger_zone` is implemented only as
   "navigate to a safe standoff position," never as blocking/contact — matching the brief's own
-  explicit prohibition, and incidentally matching this repo's `docs/06-safety-ethics.md` on this
+  explicit prohibition, and incidentally matching this repo's `docs/archive/06-safety-ethics.md` on this
   one point even though this plan otherwise diverges from those docs.
 - **What this plan does *not* newly enforce**: a numeric minimum-standoff distance during
   `follow_person`/`escort_person` (see UNSUPPORTED list above) — flagged rather than silently
@@ -579,7 +579,7 @@ existing mechanisms rather than new ones wherever possible:
    (`yaw = euler.yaw + math.radians(degrees or 0.0)`) plus standard right-hand-rule z-up yaw:
    **positive `angle_degrees` turns left/counter-clockwise, negative turns right/clockwise**.
    Implemented in `hackmitdog/aegis/navigation_skills.py`'s `turn_relative`. Still worth one real
-   hardware/sim turn to double-check empirically (see `AEGIS_SKILL_TESTING.md`'s
+   hardware/sim turn to double-check empirically (see `docs/archive/AEGIS_SKILL_TESTING.md`'s
    NEXT_HARDWARE_TESTS), but the source-level derivation is unambiguous.
 2. ~~Whether `SpatialVectorDB`'s concrete backend supports enumeration by name~~ — **resolved**:
    `SpatialMemory.get_robot_locations()`/`find_robot_location()` already do this (§3). Only
@@ -635,4 +635,4 @@ distinction stays visible.
 - **Implemented file list, current as of Phase 2**: `hackmitdog/aegis/{__init__.py, skill_errors.py,
   spec_ext.py, locations.py, navigation_skills.py, person.py, guided_walk.py, object_memory.py,
   home.py, danger_zone.py, blueprint.py}`, registered as the `aegis-go2` blueprint in
-  `pyproject.toml`. See `AEGIS_SKILL_TESTING.md` for exact run/test commands.
+  `pyproject.toml`. See `docs/archive/AEGIS_SKILL_TESTING.md` for exact run/test commands.

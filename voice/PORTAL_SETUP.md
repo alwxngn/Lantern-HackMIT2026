@@ -14,7 +14,7 @@ Open http://127.0.0.1:5173/. `/voice/` redirects to the portal. Provider status 
 ## Pairing
 
 1. Open the portal on the HTTPS tunnel origin when the phone is a separate device.
-2. Connect a phone from the check-in control and scan the QR, or open the pairing link.
+2. Open **Check in**, then connect the phone and scan the QR, or open the pairing link.
 3. Tap **Start Lantern** and leave the page in the foreground.
 4. Send a message. The phone plays it, then records a reply for up to five seconds. A typed reply is also available.
 5. The transcript shows up in the check-in thread and the Night Watch timeline.
