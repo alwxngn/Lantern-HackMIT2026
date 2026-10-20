@@ -2,6 +2,10 @@
 
 A caregiver portal and paired-phone voice check-in for a Unitree Go2 companion, built at HackMIT 2026.
 
+**Demo:** [HackMIT 2026 project page](https://plume.hackmit.org/project/krpqx-lffop-wpuom-ttmme) · [Demo video (YouTube)](https://www.youtube.com/watch?v=UiwDwaL6978)
+
+[![Lantern demo video](https://img.youtube.com/vi/UiwDwaL6978/maxresdefault.jpg)](https://www.youtube.com/watch?v=UiwDwaL6978)
+
 Lantern is a 24-hour hackathon prototype (HackMIT 2026, September 19–20) for families supporting someone with dementia. A caregiver sets up the household in a web app, sends a spoken check-in to a paired phone, and watches Night Watch alerts, maps, and activity from the same event stream. Spoken robot requests can walk, follow, return home, or play a fixed set of Go2 actions when DimOS and the robot bridges are running. The phone is the microphone and speaker. It does not talk to the Go2 directly.
 
 This repository is the finished hackathon build. The planning notes in [`docs/`](docs/) describe a wider product than the code implements. The robot skill package still uses the earlier name **Aegis**.
